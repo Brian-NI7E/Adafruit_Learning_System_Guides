@@ -1,11 +1,13 @@
 """
-NeoPixel Animator code for ItsyBitsy nRF52840 NeoPixel Animation and Color Remote Control.
+Code for ItsyBitsy nRF52840 Infinity Cube.
 """
 
 import board
 import neopixel
-from adafruit_led_animation.animation import Comet, Sparkle, AnimationGroup,\
-    AnimationSequence
+from adafruit_led_animation.animation.comet import Comet
+from adafruit_led_animation.animation.sparkle import Sparkle
+from adafruit_led_animation.group import AnimationGroup
+from adafruit_led_animation.sequence import AnimationSequence
 import adafruit_led_animation.color as color
 
 from adafruit_ble import BLERadio
@@ -59,7 +61,7 @@ while True:
             animations.animate()  # Run the animations.
         if ble.connected:  # If BLE is connected...
             was_connected = True
-            if uart.in_waiting:  # Check to see if any data is available from the Remote Control.
+            if uart.in_waiting:  # Check to see if any data is available.
                 try:
                     packet = Packet.from_stream(uart)  # Create the packet object.
                 except ValueError:
@@ -73,14 +75,14 @@ while True:
                         animations.color = animation_color  # Freeze the animation color.
                         print("Color:", animation_color)
                 elif isinstance(packet, ButtonPacket):  # If the packet is a button packet...
-                    if packet.pressed:  # If the buttons on the Remote Control are pressed...
-                        if packet.button == ButtonPacket.LEFT:  # If button A is pressed...
+                    if packet.pressed:  # If the buttons in the app are pressed...
+                        if packet.button == ButtonPacket.LEFT:  # If left arrow is pressed...
                             print("A pressed: animation mode changed.")
                             animations.next()  # Change to the next animation.
-                        elif packet.button == ButtonPacket.RIGHT:  # If button B is pressed...
+                        elif packet.button == ButtonPacket.RIGHT:  # If right arrow is pressed...
                             mode += 1  # Increase the mode by 1.
                             if mode == 1:  # If mode is 1, print the following:
-                                print("B pressed: color frozen!")
+                                print("Right pressed: color frozen!")
                             if mode > 1:  # If mode is > 1...
                                 mode = 0  # Set mode to 0, and print the following:
-                                print("B pressed: color changing!")
+                                print("Right pressed: color changing!")
